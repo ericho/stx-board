@@ -1,0 +1,17 @@
+{{~ #*inline "page"}}
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Status</th>
+    <th>Priority</th>
+  </tr>
+  {{~ #each this}}
+  <tr>
+      <td><a href='https://storyboard.openstack.org/#!/story/{{this.story_id}}'>{{this.title}}</a></td>
+      <td>{{this.status}}</td>
+      <td>{{this.priority}}</td>
+  </tr>
+  {{~ /each}}
+</table>
+{{~ /inline}}
+{{~> index ~}}
