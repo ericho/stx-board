@@ -1,10 +1,13 @@
 {{~ #*inline "page"}}
-<table>
+<table class="stx-table">
+  <thead>
   <tr>
     <th>Title</th>
     <th>Status</th>
     <th>Priority</th>
   </tr>
+  </thead>
+  <tbody>
   {{~ #each this}}
   <tr>
       <td><a href='https://storyboard.openstack.org/#!/story/{{this.story_id}}'>{{this.title}}</a></td>
@@ -12,6 +15,7 @@
       <td>{{this.priority}}</td>
   </tr>
   {{~ /each}}
+  </tbody>
 </table>
 {{~ /inline}}
 {{~> index ~}}

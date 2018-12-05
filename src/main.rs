@@ -3,9 +3,16 @@ extern crate handlebars;
 extern crate storyboard_client;
 extern crate serde_json;
 
-use actix_web::{server, App, HttpRequest, HttpResponse};
+use actix_web::{
+    fs,
+    server, App, HttpRequest, HttpResponse
+};
 use storyboard_client::{Client, ProjectGroup, Task};
 use handlebars::Handlebars;
+
+// Temp use for testing
+use std::fs::File;
+use std::io::Read;
 
 
 const STARLINGX_ID: i32 = 86;
@@ -17,18 +24,24 @@ struct AppState {
 
 fn register_templates() -> Handlebars {
     let mut h = Handlebars::new();
-    h.register_template_file("index", "./templates/index.hbs").unwrap();
-    h.register_template_file("all_tasks", "./templates/all_tasks.hbs").unwrap();
+    h.register_template_file("index", "./src/templates/index.hbs").unwrap();
+    h.register_template_file("all_tasks", "./src/templates/all_tasks.hbs").unwrap();
     h
 }
 
 fn all_tasks(req: &HttpRequest<AppState>) -> Result<HttpResponse, std::io::Error> {
 
     let group: ProjectGroup = ProjectGroup { id: STARLINGX_ID, ..Default::default() };
-    let tasks = req.state()
-        .client
-        .get_tasks_in_project_group(&group)
-        .unwrap();
+    //let _tasks = req.state()
+    //    .client
+    //    .get_tasks_in_project_group(&group)
+    //    .unwrap();
+
+    let mut file = File::open("tests/tasks.json")?;
+    let mut s = String::new();
+    file.read_to_string(&mut s)?;
+
+    let tasks: Vec<Task> = serde_json::from_str(&s)?;
 
     let tasks: Vec<Task> = tasks.into_iter()
         .filter(|t|
@@ -52,13 +65,24 @@ fn all_tasks(req: &HttpRequest<AppState>) -> Result<HttpResponse, std::io::Error
     Ok(HttpResponse::Ok().content_type("text/html").body(body))
 }
 
+#[derive(Default)]
+struct StaticFileConfig;
+
+impl fs::StaticFileConfig for StaticFileConfig {
+    fn is_use_etag() -> bool {
+        true
+    }
+}
 
 fn main() {
     server::new(
         || App::with_state(AppState {
             client: Client::new("https://storyboard.openstack.org/api/v1"),
             templates: register_templates(),
-        }).resource("/", |r| r.get().f(all_tasks)))
+        }).handler(
+            "/static",
+            fs::StaticFiles::with_config("src/dist", StaticFileConfig).unwrap()
+        ).resource("/", |r| r.get().f(all_tasks)))
         .bind("0.0.0.0:8080")
         .unwrap()
         .run();

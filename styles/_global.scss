@@ -1,0 +1,42 @@
+.stx-table {
+    empty-cells: show;
+    border: 1px solid #cbcbcb
+}
+
+.stx-table caption {
+    color: #000;
+    font: italic 85% / 1 arial, sans-serif;
+    padding: 1em 0;
+    text-align: center
+}
+
+.stx-table td, .stx-table th {
+    border-left: 1px solid #cbcbcb;
+    border-width: 0 0 0 1px;
+    border-width: 0 0 1px;
+    border-bottom: 1px solid #cbcbcb;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible;
+    padding: .5em 1em
+}
+
+.stx-table td:first-child, .stx-table th:first-child {
+    border-left-width: 0
+}
+
+.stx-table thead {
+    background-color: #e0e0e0;
+    color: #000;
+    text-align: left;
+    vertical-align: bottom
+}
+
+.stx-table td {
+    background-color: transparent
+}
+
+.stx-table tbody > tr:last-child > td {
+    border-bottom-width: 0
+}
+
